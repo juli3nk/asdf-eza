@@ -32,6 +32,10 @@ list_all_versions() {
   list_github_tags
 }
 
+lsb_release() {
+  awk -F'=' '/^ID=/ { print $2 }' /etc/os-release | tr '[:upper:]' '[:lower:]'
+}
+
 download_release() {
   local version filename url
   version="$1"
@@ -50,6 +54,7 @@ download_release() {
       ;;
     x86_64-linux)
       url="$GH_REPO/releases/download/v${version}/eza_x86_64-unknown-linux-gnu.tar.gz"
+      [[ "$(lsb_release)" == "nixos" ]] && url="$GH_REPO/releases/download/v${version}/eza_x86_64-unknown-linux-musl.tar.gz"
       ;;
     *)
       fail "Could not determine release URL"
